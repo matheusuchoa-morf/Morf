@@ -85,6 +85,118 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
+// Character System (Habitica-style)
+export interface CharacterStats {
+  carisma: number;
+  persuasao: number;
+  resiliencia: number;
+  estrategia: number;
+  networking: number;
+}
+
+export interface CharacterEquipment {
+  id: string;
+  name: string;
+  slot: "head" | "body" | "accessory" | "tool";
+  icon: string;
+  statBonus: Partial<CharacterStats>;
+  requiredLevel: number;
+  description: string;
+}
+
+export interface CharacterAppearance {
+  skinColor: string;
+  hairStyle: string;
+  outfit: string;
+  aura: string;
+}
+
+export interface Character {
+  stats: CharacterStats;
+  equipment: string[];
+  title: string;
+  appearance: CharacterAppearance;
+  skillPoints: number;
+  completedSkillTasks: string[];
+  completedSocialSelling: string[];
+}
+
+// Skill Tasks (Multiple Choice Training)
+export interface SkillTask {
+  id: string;
+  title: string;
+  description: string;
+  category: "carisma" | "persuasao" | "resiliencia" | "estrategia" | "networking";
+  difficulty: "iniciante" | "intermediario" | "avancado";
+  scenario: string;
+  options: SkillTaskOption[];
+  xpReward: number;
+  statReward: Partial<CharacterStats>;
+  requiredLevel: number;
+}
+
+export interface SkillTaskOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  feedback: string;
+  statBonus: Partial<CharacterStats>;
+}
+
+// Social Selling (Prova Real - Instagram)
+export interface ProspectPersona {
+  id: string;
+  name: string;
+  username: string;
+  avatar: string;
+  bio: string;
+  industry: string;
+  painPoints: string[];
+  interests: string[];
+  objections: string[];
+  buyingSignals: string[];
+  personality: "receptivo" | "cético" | "ocupado" | "analítico";
+  difficulty: "iniciante" | "intermediario" | "avancado";
+}
+
+export interface ConversationMessage {
+  id: string;
+  sender: "user" | "prospect";
+  text: string;
+  timestamp: number;
+  reaction?: string;
+}
+
+export interface MessageOption {
+  id: string;
+  text: string;
+  type: "abertura" | "rapport" | "qualificacao" | "valor" | "cta" | "objecao";
+  effectiveness: number; // 0-100
+  prospectResponse: string;
+  scoreImpact: number;
+  statBonus: Partial<CharacterStats>;
+}
+
+export interface SocialSellingScenario {
+  id: string;
+  title: string;
+  description: string;
+  prospect: ProspectPersona;
+  stages: ConversationStage[];
+  xpReward: number;
+  requiredLevel: number;
+  maxScore: number;
+}
+
+export interface ConversationStage {
+  id: string;
+  stageName: string;
+  context: string;
+  prospectMessage: string;
+  options: MessageOption[];
+  tip?: string;
+}
+
 export const RANKS = [
   { name: "Estagiário", minLevel: 1, icon: "🌱" },
   { name: "SDR Iniciante", minLevel: 3, icon: "📞" },
