@@ -92,3 +92,99 @@ export function resetUser(): User {
   saveUser(user);
   return user;
 }
+
+// Character state
+const CHAR_STORAGE_KEY = "morf_character_data";
+
+import { Character, CharacterStats } from "@/types";
+
+const DEFAULT_CHARACTER: Character = {
+  stats: {
+    carisma: 1,
+    persuasao: 1,
+    resiliencia: 1,
+    estrategia: 1,
+    networking: 1,
+  },
+  equipment: ["headset-basico", "camisa-startup", "cracha-sdr", "caderno-notas"],
+  title: "Novato em Vendas",
+  appearance: {
+    skinColor: "bg-amber-200",
+    hairStyle: "Casual",
+    outfit: "Iniciante",
+    aura: "",
+  },
+  skillPoints: 0,
+  completedSkillTasks: [],
+  completedSocialSelling: [],
+};
+
+export function loadCharacter(): Character {
+  if (typeof window === "undefined") return DEFAULT_CHARACTER;
+  try {
+    const data = localStorage.getItem(CHAR_STORAGE_KEY);
+    if (data) return JSON.parse(data);
+  } catch {}
+  return { ...DEFAULT_CHARACTER, stats: { ...DEFAULT_CHARACTER.stats }, equipment: [...DEFAULT_CHARACTER.equipment] };
+}
+
+export function saveCharacter(character: Character): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(character));
+}
+
+export function completeSkillTask(
+  character: Character,
+  taskId: string,
+  statBonus: Partial<CharacterStats>
+): Character {
+  if (character.completedSkillTasks.includes(taskId)) return character;
+  const newStats = { ...character.stats };
+  for (const key of Object.keys(statBonus) as (keyof CharacterStats)[]) {
+    newStats[key] = (newStats[key] || 0) + (statBonus[key] || 0);
+  }
+  const updated: Character = {
+    ...character,
+    stats: newStats,
+    completedSkillTasks: [...character.completedSkillTasks, taskId],
+    skillPoints: character.skillPoints + 1,
+  };
+  saveCharacter(updated);
+  return updated;
+}
+
+export function completeSocialSelling(
+  character: Character,
+  scenarioId: string,
+  statBonus: Partial<CharacterStats>
+): Character {
+  if (character.completedSocialSelling.includes(scenarioId)) return character;
+  const newStats = { ...character.stats };
+  for (const key of Object.keys(statBonus) as (keyof CharacterStats)[]) {
+    newStats[key] = (newStats[key] || 0) + (statBonus[key] || 0);
+  }
+  const updated: Character = {
+    ...character,
+    stats: newStats,
+    completedSocialSelling: [...character.completedSocialSelling, scenarioId],
+  };
+  saveCharacter(updated);
+  return updated;
+}
+
+export function equipItem(character: Character, equipmentId: string, slot: string): Character {
+  const SLOT_IDS: Record<string, string[]> = {
+    head: ["headset-basico", "oculos-analitico", "coroa-closer", "capacete-lendario"],
+    body: ["camisa-startup", "blazer-closer", "armadura-revenue", "manto-cro"],
+    accessory: ["cracha-sdr", "relogio-produtividade", "anel-influencia", "amuleto-lenda"],
+    tool: ["caderno-notas", "crm-magico", "megafone-closer", "cetro-vendas"],
+  };
+  const slotItems = SLOT_IDS[slot] || [];
+  const filteredEquipment = character.equipment.filter((id) => !slotItems.includes(id));
+  const updated: Character = {
+    ...character,
+    equipment: [...filteredEquipment, equipmentId],
+  };
+  saveCharacter(updated);
+  return updated;
+}
