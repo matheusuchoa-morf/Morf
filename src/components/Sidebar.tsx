@@ -14,6 +14,9 @@ const navItems = [
   { id: "dashboard", label: "Dashboard", icon: "🏠" },
   { id: "modules", label: "Módulos", icon: "📚" },
   { id: "challenges", label: "Desafios", icon: "⚔️" },
+  { id: "skill-tasks", label: "Habilidades", icon: "🎯" },
+  { id: "social-selling", label: "Social Selling", icon: "📱" },
+  { id: "character", label: "Personagem", icon: "🧙" },
   { id: "badges", label: "Conquistas", icon: "🏅" },
   { id: "leaderboard", label: "Ranking", icon: "🏆" },
 ];

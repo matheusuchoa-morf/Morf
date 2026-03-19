@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { User } from "@/types";
-import { loadUser, addXp, completeModule, completeChallenge, unlockBadge } from "@/lib/store";
+import { Character, User } from "@/types";
+import { loadUser, addXp, completeModule, completeChallenge, unlockBadge, loadCharacter } from "@/lib/store";
 import { challenges } from "@/data/challenges";
 import { modules } from "@/data/modules";
 import Sidebar from "@/components/Sidebar";
@@ -12,9 +12,13 @@ import ModulesPage from "@/components/pages/ModulesPage";
 import ChallengesPage from "@/components/pages/ChallengesPage";
 import BadgesPage from "@/components/pages/BadgesPage";
 import LeaderboardPage from "@/components/pages/LeaderboardPage";
+import CharacterPage from "@/components/pages/CharacterPage";
+import SkillTasksPage from "@/components/pages/SkillTasksPage";
+import SocialSellingPage from "@/components/pages/SocialSellingPage";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
+  const [character, setCharacter] = useState<Character | null>(null);
   const [currentPage, setCurrentPage] = useState("dashboard");
   const [notification, setNotification] = useState<{
     xp: number;
@@ -23,18 +27,28 @@ export default function Home() {
 
   useEffect(() => {
     setUser(loadUser());
+    setCharacter(loadCharacter());
   }, []);
 
   const showNotification = useCallback((xp: number, message: string) => {
     setNotification({ xp, message });
   }, []);
 
+  function checkLevelBadges(updated: User): User {
+    if (updated.level >= 5) updated = unlockBadge(updated, "badge-level-5");
+    if (updated.level >= 10) updated = unlockBadge(updated, "badge-level-10");
+    if (updated.level >= 20) updated = unlockBadge(updated, "badge-level-20");
+    if (updated.level >= 30) updated = unlockBadge(updated, "badge-level-30");
+    if (updated.xp >= 1000) updated = unlockBadge(updated, "badge-xp-1000");
+    if (updated.xp >= 10000) updated = unlockBadge(updated, "badge-xp-10000");
+    return updated;
+  }
+
   function handleModuleComplete(moduleId: string, xpEarned: number) {
     if (!user) return;
     let updated = addXp(user, xpEarned);
     updated = completeModule(updated, moduleId);
 
-    // Check badge unlocks
     if (updated.completedModules.length === 1) {
       updated = unlockBadge(updated, "badge-first-module");
     }
@@ -44,16 +58,7 @@ export default function Home() {
     if (updated.completedModules.length >= modules.length) {
       updated = unlockBadge(updated, "badge-all-modules");
     }
-
-    // Level badges
-    if (updated.level >= 5) updated = unlockBadge(updated, "badge-level-5");
-    if (updated.level >= 10) updated = unlockBadge(updated, "badge-level-10");
-    if (updated.level >= 20) updated = unlockBadge(updated, "badge-level-20");
-    if (updated.level >= 30) updated = unlockBadge(updated, "badge-level-30");
-
-    // XP badges
-    if (updated.xp >= 1000) updated = unlockBadge(updated, "badge-xp-1000");
-    if (updated.xp >= 10000) updated = unlockBadge(updated, "badge-xp-10000");
+    updated = checkLevelBadges(updated);
 
     setUser(updated);
     showNotification(xpEarned, "Módulo completado!");
@@ -67,29 +72,27 @@ export default function Home() {
     let updated = addXp(user, xpReward);
     updated = completeChallenge(updated, challengeId);
 
-    // Check badge unlocks
     if (updated.completedChallenges.length === 1) {
       updated = unlockBadge(updated, "badge-first-challenge");
     }
     if (challenge.type === "boss") {
       updated = unlockBadge(updated, "badge-boss-killer");
     }
-
-    // Level badges
-    if (updated.level >= 5) updated = unlockBadge(updated, "badge-level-5");
-    if (updated.level >= 10) updated = unlockBadge(updated, "badge-level-10");
-    if (updated.level >= 20) updated = unlockBadge(updated, "badge-level-20");
-    if (updated.level >= 30) updated = unlockBadge(updated, "badge-level-30");
-
-    // XP badges
-    if (updated.xp >= 1000) updated = unlockBadge(updated, "badge-xp-1000");
-    if (updated.xp >= 10000) updated = unlockBadge(updated, "badge-xp-10000");
+    updated = checkLevelBadges(updated);
 
     setUser(updated);
     showNotification(xpReward, "Desafio completado!");
   }
 
-  if (!user) {
+  function handleXpEarned(xp: number, message: string) {
+    if (!user) return;
+    let updated = addXp(user, xp);
+    updated = checkLevelBadges(updated);
+    setUser(updated);
+    showNotification(xp, message);
+  }
+
+  if (!user || !character) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
         <div className="text-center">
@@ -119,6 +122,29 @@ export default function Home() {
           <ChallengesPage
             user={user}
             onChallengeComplete={handleChallengeComplete}
+          />
+        )}
+        {currentPage === "skill-tasks" && (
+          <SkillTasksPage
+            user={user}
+            character={character}
+            onCharacterUpdate={setCharacter}
+            onXpEarned={handleXpEarned}
+          />
+        )}
+        {currentPage === "social-selling" && (
+          <SocialSellingPage
+            user={user}
+            character={character}
+            onCharacterUpdate={setCharacter}
+            onXpEarned={handleXpEarned}
+          />
+        )}
+        {currentPage === "character" && (
+          <CharacterPage
+            user={user}
+            character={character}
+            onCharacterUpdate={setCharacter}
           />
         )}
         {currentPage === "badges" && <BadgesPage user={user} />}
