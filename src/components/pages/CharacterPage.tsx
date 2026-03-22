@@ -10,19 +10,21 @@ interface CharacterPageProps {
   user: User;
   character: Character;
   onCharacterUpdate: (character: Character) => void;
+  onPhotoChange?: (photo: string) => void;
 }
 
 const SLOT_LABELS: Record<string, string> = {
-  head: "Cabeça",
-  body: "Corpo",
-  accessory: "Acessório",
-  tool: "Ferramenta",
+  head: "Elmo",
+  body: "Armadura",
+  accessory: "Amuleto",
+  tool: "Arma",
 };
 
 export default function CharacterPage({
   user,
   character,
   onCharacterUpdate,
+  onPhotoChange,
 }: CharacterPageProps) {
   const [activeTab, setActiveTab] = useState<"character" | "equipment">(
     "character"
@@ -45,10 +47,10 @@ export default function CharacterPage({
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-white mb-2">
-          ⚔️ Meu Personagem
+          ⚔️ Meu Guerreiro
         </h1>
         <p className="text-gray-400">
-          Evolua seus atributos completando treinos e missões de social selling
+          Evolua seu personagem completando missoes e batalhas de vendas
         </p>
       </div>
 
@@ -70,13 +72,13 @@ export default function CharacterPage({
       </div>
 
       {activeTab === "character" && (
-        <CharacterView character={character} user={user} />
+        <CharacterView character={character} user={user} onPhotoChange={onPhotoChange} />
       )}
 
       {activeTab === "equipment" && (
         <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
           <h2 className="text-xl font-bold text-white mb-6">
-            Gerenciar Equipamentos
+            Arsenal do Guerreiro
           </h2>
 
           {/* Slot selector */}

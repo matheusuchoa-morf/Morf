@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Character, User } from "@/types";
-import { loadUser, addXp, completeModule, completeChallenge, unlockBadge, loadCharacter } from "@/lib/store";
+import { loadUser, addXp, completeModule, completeChallenge, unlockBadge, loadCharacter, saveUser } from "@/lib/store";
 import { challenges } from "@/data/challenges";
 import { modules } from "@/data/modules";
 import Sidebar from "@/components/Sidebar";
@@ -145,6 +145,11 @@ export default function Home() {
             user={user}
             character={character}
             onCharacterUpdate={setCharacter}
+            onPhotoChange={(photo: string) => {
+              const updated = { ...user, photo };
+              saveUser(updated);
+              setUser(updated);
+            }}
           />
         )}
         {currentPage === "badges" && <BadgesPage user={user} />}
