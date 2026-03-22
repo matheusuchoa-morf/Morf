@@ -1,8 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Character, CharacterStats, User } from "@/types";
 import { EQUIPMENT_CATALOG, getCharacterTitle } from "@/data/character";
 import SkyrimAvatar from "./SkyrimAvatar";
+
+const Character3D = dynamic(() => import("./character3d/Character3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full flex items-center justify-center" style={{ height: "340px" }}>
+      <div className="text-gray-600 text-sm animate-pulse">Invocando guerreiro...</div>
+    </div>
+  ),
+});
 
 interface CharacterViewProps {
   character: Character;
@@ -62,14 +72,8 @@ export default function CharacterView({ character, user, onPhotoChange }: Charac
       {/* Character Portrait */}
       <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
         <div className="text-center mb-6">
-          <div className="flex justify-center mb-4">
-            <SkyrimAvatar
-              user={user}
-              character={character}
-              size="lg"
-              editable={true}
-              onPhotoChange={onPhotoChange}
-            />
+          <div className="mb-4">
+            <Character3D user={user} character={character} />
           </div>
           <h2 className="text-xl font-bold text-white mt-2">{user.name}</h2>
           <p className="text-amber-400 font-medium italic">&ldquo;{title}&rdquo;</p>
