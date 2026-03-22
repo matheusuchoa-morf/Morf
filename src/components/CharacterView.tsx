@@ -1,11 +1,13 @@
 "use client";
 
 import { Character, CharacterStats, User } from "@/types";
-import { EQUIPMENT_CATALOG, getCharacterAppearance, getCharacterTitle } from "@/data/character";
+import { EQUIPMENT_CATALOG, getCharacterTitle } from "@/data/character";
+import SkyrimAvatar from "./SkyrimAvatar";
 
 interface CharacterViewProps {
   character: Character;
   user: User;
+  onPhotoChange?: (photo: string) => void;
 }
 
 const STAT_ICONS: Record<keyof CharacterStats, string> = {
@@ -24,15 +26,22 @@ const STAT_COLORS: Record<keyof CharacterStats, string> = {
   networking: "from-yellow-500 to-amber-500",
 };
 
-const SLOT_LABELS: Record<string, string> = {
-  head: "Cabeça",
-  body: "Corpo",
-  accessory: "Acessório",
-  tool: "Ferramenta",
+const STAT_LABELS: Record<keyof CharacterStats, string> = {
+  carisma: "Carisma",
+  persuasao: "Persuasao",
+  resiliencia: "Resiliencia",
+  estrategia: "Estrategia",
+  networking: "Networking",
 };
 
-export default function CharacterView({ character, user }: CharacterViewProps) {
-  const appearance = getCharacterAppearance(user.level);
+const SLOT_LABELS: Record<string, string> = {
+  head: "Elmo",
+  body: "Armadura",
+  accessory: "Amuleto",
+  tool: "Arma",
+};
+
+export default function CharacterView({ character, user, onPhotoChange }: CharacterViewProps) {
   const title = getCharacterTitle(user.level);
 
   const equippedItems = EQUIPMENT_CATALOG.filter((e) =>
@@ -50,32 +59,38 @@ export default function CharacterView({ character, user }: CharacterViewProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Character Avatar */}
+      {/* Character Portrait */}
       <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
         <div className="text-center mb-6">
-          <div
-            className={`w-32 h-32 mx-auto rounded-full flex items-center justify-center text-6xl border-4 ${appearance.aura || "border-gray-700"} shadow-lg`}
-          >
-            {user.avatar}
+          <div className="flex justify-center mb-4">
+            <SkyrimAvatar
+              user={user}
+              character={character}
+              size="lg"
+              editable={true}
+              onPhotoChange={onPhotoChange}
+            />
           </div>
-          <h2 className="text-xl font-bold text-white mt-4">{user.name}</h2>
-          <p className="text-purple-400 font-medium">{title}</p>
+          <h2 className="text-xl font-bold text-white mt-2">{user.name}</h2>
+          <p className="text-amber-400 font-medium italic">&ldquo;{title}&rdquo;</p>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <span className="text-xs bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full border border-purple-600/30">
-              Nível {user.level}
-            </span>
             {character.skillPoints > 0 && (
               <span className="text-xs bg-yellow-600/20 text-yellow-300 px-3 py-1 rounded-full border border-yellow-600/30">
-                ⭐ {character.skillPoints} skill points
+                {character.skillPoints} pontos de habilidade
               </span>
             )}
           </div>
+          {!user.photo && (
+            <p className="text-xs text-gray-500 mt-3">
+              Clique no icone da camera para enviar sua foto e criar seu guerreiro
+            </p>
+          )}
         </div>
 
-        {/* Equipped Items */}
+        {/* Equipped Items - Skyrim style */}
         <div>
           <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Equipamentos
+            Equipamento
           </h3>
           <div className="grid grid-cols-2 gap-2">
             {(["head", "body", "accessory", "tool"] as const).map((slot) => {
@@ -83,9 +98,9 @@ export default function CharacterView({ character, user }: CharacterViewProps) {
               return (
                 <div
                   key={slot}
-                  className="bg-gray-800 rounded-xl p-3 border border-gray-700"
+                  className="bg-gray-800/80 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-colors"
                 >
-                  <p className="text-xs text-gray-500 mb-1">{SLOT_LABELS[slot]}</p>
+                  <p className="text-xs text-amber-500/70 mb-1 font-medium">{SLOT_LABELS[slot]}</p>
                   {item ? (
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{item.icon}</span>
@@ -101,7 +116,7 @@ export default function CharacterView({ character, user }: CharacterViewProps) {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-600">Vazio</p>
+                    <p className="text-xs text-gray-600 italic">Vazio</p>
                   )}
                 </div>
               );
@@ -125,8 +140,8 @@ export default function CharacterView({ character, user }: CharacterViewProps) {
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span>{STAT_ICONS[stat]}</span>
-                    <span className="text-sm font-medium text-gray-300 capitalize">
-                      {stat}
+                    <span className="text-sm font-medium text-gray-300">
+                      {STAT_LABELS[stat]}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">

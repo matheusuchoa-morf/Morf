@@ -2,6 +2,7 @@ export interface User {
   id: string;
   name: string;
   avatar: string;
+  photo?: string; // base64 photo for Skyrim avatar
   level: number;
   xp: number;
   xpToNextLevel: number;

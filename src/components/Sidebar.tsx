@@ -2,7 +2,9 @@
 
 import { User } from "@/types";
 import { getRank } from "@/lib/gamification";
+import { loadCharacter } from "@/lib/store";
 import XpBar from "./XpBar";
+import SkyrimAvatar from "./SkyrimAvatar";
 
 interface SidebarProps {
   user: User;
@@ -23,6 +25,7 @@ const navItems = [
 
 export default function Sidebar({ user, currentPage, onNavigate }: SidebarProps) {
   const rank = getRank(user.level);
+  const character = loadCharacter();
 
   return (
     <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col min-h-screen">
@@ -37,9 +40,7 @@ export default function Sidebar({ user, currentPage, onNavigate }: SidebarProps)
       {/* User Profile */}
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl">
-            {user.avatar}
-          </div>
+          <SkyrimAvatar user={user} character={character} size="sm" />
           <div>
             <p className="font-semibold text-white text-sm">{user.name}</p>
             <p className="text-xs text-gray-400">
