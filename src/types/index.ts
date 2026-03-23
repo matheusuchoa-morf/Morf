@@ -120,6 +120,7 @@ export interface Character {
   skillPoints: number;
   completedSkillTasks: string[];
   completedSocialSelling: string[];
+  completedCarousels: string[];
 }
 
 // Skill Tasks (Multiple Choice Training)
@@ -196,6 +197,77 @@ export interface ConversationStage {
   prospectMessage: string;
   options: MessageOption[];
   tip?: string;
+}
+
+// === Carousel Story Agents System ===
+
+export interface BusinessStory {
+  id: string;
+  company: string;
+  industry: string;
+  country: string;
+  protagonist: string;
+  title: string;
+  summary: string;
+  keyMetrics: string[];
+  conflictPoint: string;
+  resolution: string;
+  tags: string[];
+}
+
+export interface CarouselSlide {
+  id: string;
+  position: number;
+  text: string;
+  charCount: number;
+  narrativeRole: "hook" | "context" | "tension" | "climax" | "insight" | "cta";
+  needsImage: boolean;
+  imageKeyword?: string;
+  imageUrl?: string;
+}
+
+export interface CarouselTheme {
+  id: string;
+  name: string;
+  primaryColor: string;
+  secondaryColor: string;
+  bgGradient: string;
+  textColor: string;
+  accentColor: string;
+}
+
+export interface CarouselAgentOption {
+  id: string;
+  text: string;
+  description: string;
+  effectiveness: number;
+  scoreImpact: number;
+  statBonus: Partial<CharacterStats>;
+}
+
+export interface CarouselAgentStep {
+  id: string;
+  agentName: string;
+  agentRole: string;
+  agentIcon: string;
+  stageName: string;
+  context: string;
+  options: CarouselAgentOption[];
+  tip?: string;
+}
+
+export interface CarouselScenario {
+  id: string;
+  title: string;
+  description: string;
+  story: BusinessStory;
+  theme: CarouselTheme;
+  agentSteps: CarouselAgentStep[];
+  slides: CarouselSlide[];
+  xpReward: number;
+  requiredLevel: number;
+  maxScore: number;
+  difficulty: "iniciante" | "intermediario" | "avancado";
 }
 
 export const RANKS = [

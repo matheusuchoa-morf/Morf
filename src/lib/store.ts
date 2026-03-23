@@ -117,6 +117,7 @@ const DEFAULT_CHARACTER: Character = {
   skillPoints: 0,
   completedSkillTasks: [],
   completedSocialSelling: [],
+  completedCarousels: [],
 };
 
 export function loadCharacter(): Character {
@@ -167,6 +168,25 @@ export function completeSocialSelling(
     ...character,
     stats: newStats,
     completedSocialSelling: [...character.completedSocialSelling, scenarioId],
+  };
+  saveCharacter(updated);
+  return updated;
+}
+
+export function completeCarousel(
+  character: Character,
+  scenarioId: string,
+  statBonus: Partial<CharacterStats>
+): Character {
+  if (character.completedCarousels.includes(scenarioId)) return character;
+  const newStats = { ...character.stats };
+  for (const key of Object.keys(statBonus) as (keyof CharacterStats)[]) {
+    newStats[key] = (newStats[key] || 0) + (statBonus[key] || 0);
+  }
+  const updated: Character = {
+    ...character,
+    stats: newStats,
+    completedCarousels: [...character.completedCarousels, scenarioId],
   };
   saveCharacter(updated);
   return updated;
