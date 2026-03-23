@@ -15,6 +15,7 @@ import LeaderboardPage from "@/components/pages/LeaderboardPage";
 import CharacterPage from "@/components/pages/CharacterPage";
 import SkillTasksPage from "@/components/pages/SkillTasksPage";
 import SocialSellingPage from "@/components/pages/SocialSellingPage";
+import AgentStudioPage from "@/components/pages/AgentStudioPage";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -139,6 +140,9 @@ export default function Home() {
             onCharacterUpdate={setCharacter}
             onXpEarned={handleXpEarned}
           />
+        )}
+        {currentPage === "agent-studio" && (
+          <AgentStudioPage onXpEarned={handleXpEarned} />
         )}
         {currentPage === "character" && (
           <CharacterPage

@@ -18,6 +18,7 @@ const navItems = [
   { id: "challenges", label: "Desafios", icon: "⚔️" },
   { id: "skill-tasks", label: "Habilidades", icon: "🎯" },
   { id: "social-selling", label: "Social Selling", icon: "📱" },
+  { id: "agent-studio", label: "Estúdio de Conteúdo", icon: "🎬" },
   { id: "character", label: "Personagem", icon: "🧙" },
   { id: "badges", label: "Conquistas", icon: "🏅" },
   { id: "leaderboard", label: "Ranking", icon: "🏆" },
